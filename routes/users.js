@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Collection = require('../models/Collection');
+const Feedback = require('../models/Feedback');
 const WasteRequest = require('../models/WasteRequest');
 const validateBody = require('../middleware/validateBody');
 
@@ -155,9 +157,11 @@ router.delete('/:id', async (req, res) => {
   }
 
   const hasRequests = await WasteRequest.exists({ residentId: user._id });
-  if (hasRequests) {
+  const hasCollections = await Collection.exists({ collectorId: user._id });
+  const hasFeedback = await Feedback.exists({ userId: user._id });
+  if (hasRequests || hasCollections || hasFeedback) {
     return res.status(409).json({
-      error: { message: 'Cannot delete a user who has waste requests.' },
+      error: { message: 'Cannot delete a user referenced by waste requests, collections, or feedback.' },
     });
   }
 

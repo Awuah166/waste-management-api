@@ -1,6 +1,6 @@
 # Waste Management API
 
-Node.js and Express API for managing users and resident waste collection requests with MongoDB Atlas.
+Node.js and Express API for managing users, resident waste collection requests, collection assignments, and resident feedback with MongoDB Atlas.
 
 ## Run locally
 
@@ -35,5 +35,22 @@ The server listens on Render's `PORT` environment variable. Once deployed, Swagg
 | GET | `/api/waste-requests/:id` | Get a waste request |
 | PUT | `/api/waste-requests/:id` | Update a waste request |
 | DELETE | `/api/waste-requests/:id` | Delete a waste request |
+| GET | `/api/collections` | List collection assignments |
+| POST | `/api/collections` | Create a collection assignment |
+| GET | `/api/collections/:id` | Get a collection assignment |
+| PUT | `/api/collections/:id` | Update a collection assignment |
+| DELETE | `/api/collections/:id` | Delete a collection assignment |
+| GET | `/api/feedback` | List resident feedback |
+| POST | `/api/feedback` | Submit resident feedback |
+| GET | `/api/feedback/:id` | Get feedback |
+| PUT | `/api/feedback/:id` | Update feedback |
+| DELETE | `/api/feedback/:id` | Delete feedback |
 
 User passwords are hashed before storage and omitted from API responses. Request validation errors return `400`, duplicate email addresses and attempts to delete a resident with requests return `409`, and missing records return `404`.
+
+## MongoDB models
+
+- `Collection` stores collection assignments and activities in the `collections` collection, referencing a waste request and collector.
+- `Feedback` stores resident feedback in the `feedback` collection, referencing its submitting user and optionally a waste request.
+
+The `collections` and `feedback` MongoDB collections are created automatically when the API connects to the configured database. Collection references must point to existing records; collection assignments require a collector user and feedback requires a resident user.

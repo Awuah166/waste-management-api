@@ -30,6 +30,8 @@ app.get('/health', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/waste-requests', require('./routes/wasteRequests'));
+app.use('/api/collections', require('./routes/collections'));
+app.use('/api/feedback', require('./routes/feedback'));
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Route not found.' } });

@@ -7,12 +7,14 @@ const options = {
     info: {
       title: 'Waste Management API',
       version: '1.0.0',
-      description: 'CRUD API for users and waste collection requests.',
+      description: 'CRUD API for users, waste requests, collection assignments, and feedback.',
     },
     servers: [{ url: '/', description: 'Current server' }],
     tags: [
       { name: 'Users', description: 'Registered users' },
       { name: 'Waste Requests', description: 'Resident waste collection requests' },
+      { name: 'Collections', description: 'Collection assignments and activities' },
+      { name: 'Feedback', description: 'Resident feedback' },
     ],
     components: {
       parameters: {
@@ -105,6 +107,56 @@ const options = {
             preferredCollectionDate: { type: 'string', format: 'date-time' },
             status: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        CollectionInput: {
+          type: 'object',
+          required: ['wasteRequestId', 'collectorId', 'scheduledDate'],
+          properties: {
+            wasteRequestId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            collectorId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            scheduledDate: { type: 'string', format: 'date-time' },
+            status: {
+              type: 'string',
+              enum: ['pending', 'scheduled', 'in-progress', 'completed', 'cancelled'],
+            },
+            completedAt: { type: 'string', format: 'date-time' },
+            notes: { type: 'string' },
+          },
+        },
+        CollectionUpdate: {
+          type: 'object',
+          minProperties: 1,
+          properties: {
+            wasteRequestId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            collectorId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            scheduledDate: { type: 'string', format: 'date-time' },
+            status: {
+              type: 'string',
+              enum: ['pending', 'scheduled', 'in-progress', 'completed', 'cancelled'],
+            },
+            completedAt: { type: 'string', format: 'date-time' },
+            notes: { type: 'string' },
+          },
+        },
+        FeedbackInput: {
+          type: 'object',
+          required: ['userId', 'rating'],
+          properties: {
+            userId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            wasteRequestId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            rating: { type: 'integer', minimum: 1, maximum: 5 },
+            comment: { type: 'string' },
+          },
+        },
+        FeedbackUpdate: {
+          type: 'object',
+          minProperties: 1,
+          properties: {
+            userId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            wasteRequestId: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+            rating: { type: 'integer', minimum: 1, maximum: 5 },
+            comment: { type: 'string' },
           },
         },
         Error: {

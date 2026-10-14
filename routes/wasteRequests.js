@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Collection = require('../models/Collection');
+const Feedback = require('../models/Feedback');
 const WasteRequest = require('../models/WasteRequest');
 const validateBody = require('../middleware/validateBody');
 
@@ -177,6 +179,14 @@ router.delete('/:id', async (req, res) => {
   const request = await WasteRequest.findById(req.params.id);
   if (!request) {
     return res.status(404).json({ error: { message: 'Waste request not found.' } });
+  }
+
+  const hasCollections = await Collection.exists({ wasteRequestId: request._id });
+  const hasFeedback = await Feedback.exists({ wasteRequestId: request._id });
+  if (hasCollections || hasFeedback) {
+    return res.status(409).json({
+      error: { message: 'Cannot delete a waste request referenced by collections or feedback.' },
+    });
   }
 
   await request.deleteOne();

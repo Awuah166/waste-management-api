@@ -1,4 +1,17 @@
 const mongoose = require('mongoose');
+const Collection = require('../models/Collection');
+const Feedback = require('../models/Feedback');
+
+async function ensureCollection(model) {
+  const collectionName = model.collection.collectionName;
+  const existing = await mongoose.connection.db
+    .listCollections({ name: collectionName }, { nameOnly: true })
+    .hasNext();
+
+  if (!existing) {
+    await model.createCollection();
+  }
+}
 
 async function connectDB() {
   const uri = process.env.MONGODB_URI;
@@ -12,6 +25,7 @@ async function connectDB() {
     : {};
 
   await mongoose.connect(uri, options);
+  await Promise.all([ensureCollection(Collection), ensureCollection(Feedback)]);
   console.log(`Connected to MongoDB Atlas database "${mongoose.connection.name}"`);
 }
 
