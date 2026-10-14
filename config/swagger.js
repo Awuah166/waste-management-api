@@ -26,6 +26,14 @@ const options = {
           schema: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
         },
       },
+      securitySchemes: {
+        GoogleOAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Google OpenID Connect ID token obtained through Google OAuth 2.0.',
+        },
+      },
       schemas: {
         UserInput: {
           type: 'object',

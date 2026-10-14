@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./config/swagger');
 const errorHandler = require('./middleware/errorHandler');
+const requireGoogleAuth = require('./middleware/requireGoogleAuth');
 
 const app = express();
 const standardSecurityHeaders = helmet();
@@ -29,8 +30,8 @@ app.get('/health', (req, res) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/users', require('./routes/users'));
-app.use('/api/waste-requests', require('./routes/wasteRequests'));
-app.use('/api/collections', require('./routes/collections'));
+app.use('/api/waste-requests', requireGoogleAuth, require('./routes/wasteRequests'));
+app.use('/api/collections', requireGoogleAuth, require('./routes/collections'));
 app.use('/api/feedback', require('./routes/feedback'));
 
 app.use((req, res) => {

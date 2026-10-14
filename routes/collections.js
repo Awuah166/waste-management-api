@@ -53,12 +53,16 @@ async function validateReferences(fields, res) {
  *   get:
  *     tags: [Collections]
  *     summary: List collection assignments
+ *     security:
+ *       - GoogleOAuth: []
  *     responses:
  *       200:
  *         description: Collection assignments returned.
  *   post:
  *     tags: [Collections]
  *     summary: Create a collection assignment
+ *     security:
+ *       - GoogleOAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -101,6 +105,8 @@ router.post('/', validateBody({
  *   get:
  *     tags: [Collections]
  *     summary: Get a collection assignment
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     responses:
@@ -113,6 +119,8 @@ router.post('/', validateBody({
  *   put:
  *     tags: [Collections]
  *     summary: Update a collection assignment
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     requestBody:
@@ -131,6 +139,8 @@ router.post('/', validateBody({
  *   delete:
  *     tags: [Collections]
  *     summary: Delete a collection assignment
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     responses:

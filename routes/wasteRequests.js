@@ -48,6 +48,8 @@ async function validateResident(residentId, res) {
  *   get:
  *     tags: [Waste Requests]
  *     summary: List waste requests
+ *     security:
+ *       - GoogleOAuth: []
  *     responses:
  *       200:
  *         description: Waste requests returned with resident details.
@@ -56,6 +58,8 @@ async function validateResident(residentId, res) {
  *   post:
  *     tags: [Waste Requests]
  *     summary: Create a waste request
+ *     security:
+ *       - GoogleOAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -96,6 +100,8 @@ router.post('/', validateBody({
  *   get:
  *     tags: [Waste Requests]
  *     summary: Get a waste request by ID
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     responses:
@@ -109,6 +115,8 @@ router.post('/', validateBody({
  *     tags: [Waste Requests]
  *     summary: Update a waste request
  *     description: Updates the provided fields.
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     requestBody:
@@ -127,6 +135,8 @@ router.post('/', validateBody({
  *   delete:
  *     tags: [Waste Requests]
  *     summary: Delete a waste request
+ *     security:
+ *       - GoogleOAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/Id'
  *     responses:
