@@ -5,11 +5,11 @@ Node.js and Express API for managing users, resident waste collection requests, 
 ## Run locally
 
 1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env` and set `MONGODB_URI` to your Atlas connection string. Set `MONGODB_DB` to the database name you want the API to use, and configure `GOOGLE_CLIENT_ID` with your Google OAuth 2.0 Web client ID.
+2. Copy `.env.example` to `.env` and set `MONGODB_URI` to your Atlas connection string. Set `MONGODB_DB` to the database name you want the API to use, and configure the Google OAuth client ID, client secret, and callback URL.
 3. Start the API with `npm start`.
 4. Open `http://localhost:3000/api-docs` for interactive Swagger documentation. `GET /health` reports API/database connection status.
 
-Create a Web application OAuth client in Google Cloud Console, configure the OAuth consent screen, and use its client ID as `GOOGLE_CLIENT_ID`. The client application must complete Google OpenID Connect sign-in and send the resulting ID token in the `Authorization` header using the `Bearer` scheme when calling protected endpoints. The API verifies the token signature, issuer, audience, and verified email with Google's published keys.
+Create a Web application OAuth client in Google Cloud Console, configure the OAuth consent screen, and set its client ID and secret as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Register `GOOGLE_REDIRECT_URI` (exactly `https://<your-render-service>.onrender.com/auth/google/callback` in production) under **Authorized redirect URIs**. For local development, use `http://localhost:3000/auth/google/callback` and register that exact URI too. Start sign-in at `/auth/google`; after the callback, the API returns an ID token that callers send in the `Authorization` header using the `Bearer` scheme to protected endpoints. The API verifies the token signature, issuer, audience, and verified email with Google's published keys.
 
 Keep `.env` private; do not commit Atlas credentials or other secrets.
 
@@ -19,7 +19,7 @@ Create a Render **Web Service** for this repository and configure:
 
 - **Build command:** `npm install`
 - **Start command:** `npm start`
-- **Environment variables:** `MONGODB_URI` (Atlas connection string), `MONGODB_DB` (database name), and `GOOGLE_CLIENT_ID` (Google OAuth Web client ID)
+- **Environment variables:** `MONGODB_URI` (Atlas connection string), `MONGODB_DB` (database name), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI`
 
 The server listens on Render's `PORT` environment variable. Once deployed, Swagger is available at `https://<your-render-service>.onrender.com/api-docs`. Confirm your Atlas network access settings allow the deployed service to connect.
 
@@ -50,7 +50,7 @@ The server listens on Render's `PORT` environment variable. Once deployed, Swagg
 
 User passwords are hashed before storage and omitted from API responses. Request validation errors return `400`, duplicate email addresses and attempts to delete a resident with requests return `409`, and missing records return `404`.
 
-All `/api/waste-requests` and `/api/collections` endpoints require a valid Google OAuth/OpenID Connect ID token. User, feedback, and health endpoints do not require Google authentication. Swagger documents the bearer-token requirement and provides an **Authorize** control for testing protected routes.
+All `/api/waste-requests` and `/api/collections` endpoints require a valid Google OAuth/OpenID Connect ID token. Start browser sign-in at `/auth/google`; its callback returns the token and basic profile. User, feedback, and health endpoints do not require Google authentication. Swagger documents the bearer-token requirement and provides an **Authorize** control for testing protected routes.
 
 ## MongoDB models
 

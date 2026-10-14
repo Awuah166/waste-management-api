@@ -29,6 +29,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/auth/google', require('./routes/googleAuth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/waste-requests', requireGoogleAuth, require('./routes/wasteRequests'));
 app.use('/api/collections', requireGoogleAuth, require('./routes/collections'));
