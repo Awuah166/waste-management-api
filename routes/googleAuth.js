@@ -6,6 +6,13 @@ const router = express.Router();
 const stateCookieName = 'google_oauth_state';
 const stateLifetimeSeconds = 600;
 
+function isLoopbackHost(hostname) {
+  return hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || hostname === '[::1]'
+    || hostname === '::1';
+}
+
 function getOAuthConfig() {
   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = process.env;
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
@@ -19,8 +26,13 @@ function getOAuthConfig() {
     return null;
   }
 
-  if (!['http:', 'https:'].includes(redirectUrl.protocol)
-    || (redirectUrl.protocol === 'http:' && redirectUrl.hostname !== 'localhost')) {
+  if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
+    return null;
+  }
+
+  const isSecureHttps = redirectUrl.protocol === 'https:';
+  const isAllowedLocalhost = redirectUrl.protocol === 'http:' && isLoopbackHost(redirectUrl.hostname);
+  if (!isSecureHttps && !isAllowedLocalhost) {
     return null;
   }
 
@@ -28,7 +40,7 @@ function getOAuthConfig() {
     clientId: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     redirectUri: redirectUrl.toString(),
-    secureCookie: redirectUrl.protocol === 'https:',
+    secureCookie: isSecureHttps,
   };
 }
 

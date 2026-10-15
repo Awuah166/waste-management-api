@@ -103,6 +103,45 @@ test('Google sign-in route redirects to Google when OAuth credentials are config
   }
 });
 
+test('Google sign-in accepts loopback redirect URIs for local development', async () => {
+  const originalEnvironment = {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+  };
+  process.env.GOOGLE_CLIENT_ID = 'test-client-id.apps.googleusercontent.com';
+  process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret';
+  process.env.GOOGLE_REDIRECT_URI = 'http://127.0.0.1:3000/auth/google/callback';
+
+  const server = http.createServer(app);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+
+  try {
+    const { port } = server.address();
+    const response = await fetch(`http://127.0.0.1:${port}/auth/google`, {
+      redirect: 'manual',
+    });
+    assert.equal(response.status, 302);
+    const authorizationUrl = new URL(response.headers.get('location'));
+    assert.equal(authorizationUrl.searchParams.get('redirect_uri'), process.env.GOOGLE_REDIRECT_URI);
+  } finally {
+    await new Promise((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+    for (const [key, value] of Object.entries({
+      GOOGLE_CLIENT_ID: originalEnvironment.clientId,
+      GOOGLE_CLIENT_SECRET: originalEnvironment.clientSecret,
+      GOOGLE_REDIRECT_URI: originalEnvironment.redirectUri,
+    })) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+  }
+});
+
 test('Google sign-in reports missing callback configuration instead of returning a 404', async () => {
   const originalRedirectUri = process.env.GOOGLE_REDIRECT_URI;
   delete process.env.GOOGLE_REDIRECT_URI;
